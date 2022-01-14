@@ -1,5 +1,7 @@
 import Peer from "peerjs";
 
+const bc = new BroadcastChannel("fremote");
+
 export class ScreenSender {
 	peer: Peer;
 	constructor () {
@@ -15,6 +17,9 @@ export class ScreenSender {
 					// Receive messages
 					conn.on('data', function(data) {
 						console.log('Received', data);
+						if (data === "prev" || data === "next") {
+							bc.postMessage(data);
+						}
 					});
 				
 					// Send messages
@@ -37,6 +42,7 @@ export class ScreenSender {
 
 export class ScreenReceiver {
 	peer: Peer;
+	connection?: Peer.DataConnection;
 	public onStream?: () => void;
 
 	constructor () {
@@ -50,7 +56,8 @@ export class ScreenReceiver {
 
 			const conn = this.peer.connect('fremote-sender');
 			conn.on("error", console.error);
-			conn.on('open', function() {
+			conn.on('open', () => {
+				this.connection = conn;
 				// Receive messages
 				conn.on('data', function(data) {
 					console.log('Received', data);
@@ -69,5 +76,9 @@ export class ScreenReceiver {
 				this.onStream && this.onStream();
 			});
 		});
+	}
+
+	sendCommand(cmd: string) {
+		this.connection?.send(cmd);
 	}
 }

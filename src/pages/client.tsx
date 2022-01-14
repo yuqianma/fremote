@@ -5,10 +5,12 @@ export function Client() {
 	const [hasStream, setHasStream] = useState(false);
 	const [playing, setPlaying] = useState(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const sr = useRef<ScreenReceiver>(null);
 
 	useEffect(() => {
-		const sr = new ScreenReceiver();
-		sr.onStream = () => setHasStream(true);
+		const screenReceiver = new ScreenReceiver();
+		screenReceiver.onStream = () => setHasStream(true);
+		(sr as any).current = screenReceiver;
 	}, []);
 
 	const play = () => {
@@ -17,8 +19,17 @@ export function Client() {
 	}
 
 	return <>
+		F-Remote
 		<video ref={videoRef} id="target-screen" style="width:100%;" controls />
-		{/* {(hasStream && !playing) && <div onClick={play} style="position:fixed;top:0;left:0;width:100px;height:50px;background:#ccc;border-radius:10px;text-align:center;">play</div>} */}
+		{/* {(hasStream && !playing) && <div onClick={play} style="position:fixed;top:0;left:0;">play</div>} */}
 		{!hasStream && "waiting"}
+		<div
+			class="button"
+			onClick={() => sr.current?.sendCommand("prev")}
+		>prev</div>
+		<div
+			class="button"
+			onClick={() => sr.current?.sendCommand("next")}
+		>next</div>
 	</>
 }
