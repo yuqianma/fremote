@@ -6,9 +6,11 @@ export class ScreenSender {
 	peer: Peer;
 	constructor () {
 		this.peer = new Peer("fremote-sender", {
-			host: "2022.hci.fun",
-			port: 9000,
-			path: "myapp"
+			host: "peerjs.hci.fun",
+			// port: 9000,
+			path: "myapp",
+			secure: true,
+			// debug: 3
 		});
 		this.peer.on('open', (id) => {
 			console.log('My peer ID is: ' + id);
@@ -47,9 +49,11 @@ export class ScreenReceiver {
 
 	constructor () {
 		this.peer = new Peer("fremote-receiver", {
-			host: "2022.hci.fun",
-			port: 9000,
-			path: "myapp"
+			host: "peerjs.hci.fun",
+			// port: 9000,
+			path: "myapp",
+			secure: true,
+			// debug: 3,
 		});
 		this.peer.on('open', (id) => {
 			console.log('My peer ID is: ' + id);
