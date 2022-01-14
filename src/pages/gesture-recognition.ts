@@ -163,7 +163,7 @@ export class GestureRecognition {
 			lastPrediction = this.prevPrediction;
 		}
 		const delta = lastPrediction!.center.x - this.headPrediction!.center.x;
-		console.log(delta / this.width);
+		// console.log(delta / this.width);
 		if (Math.abs(delta / this.width) > 0.07) {
 			this._result(delta < 0 ? "prev" : "next");
 		}

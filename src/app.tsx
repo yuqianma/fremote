@@ -1,4 +1,5 @@
 import { Controller } from "./pages/controller";
+import { Client } from "./pages/client";
 
 export function App() {
   const params = new URLSearchParams(location.search.replace("?", ""));
@@ -6,11 +7,5 @@ export function App() {
     return <Controller />;
   }
 
-  return (
-    <>
-      <p>
-        Hello
-      </p>
-    </>
-  )
+  return <Client />;
 }
