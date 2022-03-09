@@ -1,0 +1,13 @@
+{
+  "name": "FRemote",
+  "description": "FRemote assist extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_title": "Click Me"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["desktopCapture", "tabs"]
+}
