@@ -12,19 +12,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 #app {
   height: 100%;
-  text-align: center;
-  background-color: #673ab8;
-  color: #fff;
   font-size: 1.5em;
-  padding-top: 100px;
-}
-
-.link {
-  color: #fff;
 }

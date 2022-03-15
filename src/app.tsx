@@ -1,18 +1,11 @@
+import { Bridge } from "./pages/bridge";
+import { RemoteController } from "./pages/remote-controller";
 
 export function App() {
-  return (
-    <>
-      <p>Hello Vite + Preact!</p>
-      <p>
-        <a
-          class="link"
-          href="https://preactjs.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Preact
-        </a>
-      </p>
-    </>
-  )
+  const params = new URLSearchParams(location.search);
+  if (params.get("page") === "remote-controller") {
+    return <RemoteController/>;
+  }
+
+  return <Bridge />;
 }
