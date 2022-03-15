@@ -7,14 +7,35 @@
 	<title>fremote-bridge</title>
 </head>
 <body>
-	This is a bridge page.
+	<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.2/dist/peerjs.min.js"></script> -->
+	<canvas id="qr"></canvas>
+	<div>This is a bridge page.</div>
 <script>
 	const bc = new BroadcastChannel("fremote");
 	bc.addEventListener("message", (e) => {
 		console.log("bridge:", e);
+		if (e.data.startsWith("id:")) {
+			const id = e.data.substring(3);
+			CreateQR(id);
+		};
 		window.top.postMessage(e.data, "*");
 	});
 	console.log("fremote injected");
+
+	const canvas = document.getElementById('qr');
+
+	// const baseurl = "https://2022.hci.fun";
+	// const baseurl = "http://localhost:3000";
+	const baseurl = "http://192.168.1.10:3000";
+
+	const CreateQR = (id) => {
+		const text = `${baseurl}?target-id=${id}`;
+		QRCode.toCanvas(canvas, text, function (error) {
+			if (error) console.error(error)
+			console.log('qr success!', text);
+		});
+	};
 </script>
 </body>
 </html>
