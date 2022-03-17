@@ -7,6 +7,9 @@ export default defineConfig({
     port: 22113,
     host: true,
     open: true,
+    proxy: {
+      // '/api': 'http://localhost:22315',
+    }
   },
   plugins: [preact()],
 })
