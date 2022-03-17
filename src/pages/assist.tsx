@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "preact/compat";
+import { useEffect } from "preact/compat";
 import QRCode from "qrcode";
 import { PeerScreen } from "../RTCPeer";
 
@@ -15,10 +15,6 @@ const CreateQR = (text: string) => {
 export function Assist() {
 	
 	useEffect(() => {
-		const bc = new BroadcastChannel("fremote");
-		bc.addEventListener("message", (event) => {
-			console.log("assist:", event);
-		});
 
 		(async () => {
 			const peerScreen = new PeerScreen();
@@ -26,19 +22,16 @@ export function Assist() {
 			const remoteUrl = `${RemoteControllerBaseUrl}?room-id=${peerScreen.roomId!}`;
 			CreateQR(remoteUrl);
 			await peerScreen.connect();
-			// TODO count down indicator	
+			// TODO count down indicator
 
 			await peerScreen.addScreenStream();
 
-			bc.postMessage({
-				namespace: "fremote",
-				type: "connected",
-			});
 		})();
 	}, []);
 	
 	return (<>
-		<div>Assist</div>
+		<div>FRemote</div>
 		<div><canvas id="qr"></canvas></div>
+		Valid in {PeerScreen.ConnectionTimeout / 1000}s
 	</>)
 }

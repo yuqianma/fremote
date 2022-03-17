@@ -1,18 +1,16 @@
 import { useEffect } from "preact/compat";
 
+// forward broadcast channel to target page window
 function bridge() {
 	const bc = new BroadcastChannel("fremote");
 	bc.addEventListener("message", (event) => {
-		const { namespace, type, data } = event.data;
-    if (namespace !== "fremote") {
-      return;
-    }
-		console.log("bridge:", event);
-		
-		window.top!.postMessage(event.data, "*");
+		const data = { ...event.data, namespace: "fremote" };
+		console.log("bridge:", data);
+		window.top!.postMessage(data, "*");
 	});
 }
 
+// Unnecessary to be a component, but it makes things simple.
 export function Bridge() {
 	useEffect(() => {
 		bridge();

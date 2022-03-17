@@ -1,14 +1,34 @@
 import { Peer } from "./Peer";
 
-const TimeOut = 30_000;
-
 export class PeerScreen extends Peer {
+	
+	static ConnectionTimeout = 60_000;
+
+	bc: BroadcastChannel;
+
 	constructor() {
 		super();
-		this.dc = this.pc.createDataChannel('fremote');
-		// console.log(this.dc);
-		// this._listenOnDataChannel(this.dc);
+		this.dc = this.pc.createDataChannel("fremote");
+		this.bc = this._createBroadcastChannel();
+
+		// forward data channel message to broadcast channel
+		this.dc.addEventListener("message", (event) => {
+			const data = JSON.parse(event.data);
+			if (data.type[0] !== "$") {
+				this.bc.postMessage(data);
+			}
+		});
+
 		(window as any)._peer = this;
+	}
+
+	private _createBroadcastChannel() {
+		const bc = new BroadcastChannel("fremote");
+		bc.addEventListener("message", (event) => {
+			console.log("assist:", event);
+		});
+		(window as any).bc = bc;
+		return bc;
 	}
 
 	async create() {
@@ -24,7 +44,7 @@ export class PeerScreen extends Peer {
 			};
 		});
 
-		const res = await fetch(`${Peer.ApiBaseUrl}/api/room`, {
+		const res = await fetch(`${Peer.ApiBaseUrl}/room`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -50,9 +70,9 @@ export class PeerScreen extends Peer {
 			const tid = window.setTimeout(() => {
 				window.clearInterval(iid);
 				reject('timeout');
-			}, TimeOut);
+			}, PeerScreen.ConnectionTimeout);
 			const iid = window.setInterval(async () => {
-				const res = await fetch(`${Peer.ApiBaseUrl}/api/room/${roomId}`);
+				const res = await fetch(`${Peer.ApiBaseUrl}/room/${roomId}`);
 				const { answer } = await res.json();
 				if (answer) {
 					window.clearTimeout(tid);
@@ -68,25 +88,17 @@ export class PeerScreen extends Peer {
 			const offerDesc = await this.pc.createOffer();
 			await this.pc.setLocalDescription(offerDesc);
 			const offer = this.pc.localDescription;
-			this.dc!.send(JSON.stringify({
-				type: 'offer',
-				offer,
-			}));
+
+			this.send("$offer", { offer });
 		};
-		this.dc!.onmessage = (event) => {
-			console.log('dc.onmessage', event);
-			const { type, answer } = JSON.parse(event.data);
-			if (type === 'answer') {
-				this.pc.setRemoteDescription(answer);
-			}
-		};
+		this.once("$answer", ({ answer }) => {
+			this.pc.setRemoteDescription(answer);
+		});
+
 		const screenStream = await navigator.mediaDevices.getDisplayMedia({
 			video: true
 		});
-		// console.log(screenStream);
 		const track = screenStream.getVideoTracks()[0];
 		const sender = this.pc.addTrack(track, screenStream);
-		// console.log(sender);
-		
 	}
 }

@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     open: true,
     proxy: {
-      // '/api': 'http://localhost:22315',
+      '/api': 'http://localhost:22315',
     }
   },
   plugins: [preact()],

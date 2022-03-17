@@ -6,33 +6,28 @@ export class PeerRemoteController extends Peer {
 		this.pc.ondatachannel = (event) => {
 			if (event.channel) {
 				const dc = this.dc = event.channel;
-				// this._listenOnDataChannel(dc);
 
-				this.dc.onmessage = async (event) => {
-					console.log('dc.onmessage', event);
-					const { type, offer } = JSON.parse(event.data);
+				this.once("$offer", async ({ offer }) => {
 					await this.pc.setRemoteDescription(offer);
 					const answerDesc = await this.pc.createAnswer();
-					console.log('answerDesc', answerDesc);
+					// console.log('answerDesc', answerDesc);
 					await this.pc.setLocalDescription(answerDesc);
 					const answer = this.pc.localDescription;
-					this.dc!.send(JSON.stringify({
-						type: 'answer',
-						answer,
-					}));
-				};
+
+					this.send("$answer", { answer });
+				});
 			}
 		};
 		(window as any)._peer = this;
 	}
 
 	async connect(roomId: string) {
-		const res = await fetch(`${Peer.ApiBaseUrl}/api/room/${roomId}`);
+		const res = await fetch(`${Peer.ApiBaseUrl}/room/${roomId}`);
 		const { offer } = await res.json();
-		console.log('offer', offer);
+		// console.log('offer', offer);
 		await this.pc.setRemoteDescription(offer);
 		const answerDesc = await this.pc.createAnswer();
-		console.log('answerDesc', answerDesc);
+		// console.log('answerDesc', answerDesc);
 		await this.pc.setLocalDescription(answerDesc);
 
 		const answer = await new Promise((resolve, reject) => {
@@ -44,7 +39,7 @@ export class PeerRemoteController extends Peer {
 			};
 		});
 
-		await fetch(`${Peer.ApiBaseUrl}/api/room/${roomId}`, {
+		await fetch(`${Peer.ApiBaseUrl}/room/${roomId}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'

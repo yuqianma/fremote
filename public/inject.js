@@ -1,18 +1,45 @@
-function main() {
+const fireKeyboardEvent = (keyCode) => {
+	const e = document.createEvent('Events');
+	e.initEvent('keydown', true, true);
+	e.bubbles = true;
+	e.keyCode = keyCode;
+	e.which = keyCode;
+	document.body.dispatchEvent(e);
+};
+
+const handlers = {
+  prev: fireKeyboardEvent(37),
+  next: fireKeyboardEvent(39),
+};
+
+// patch for duchamp
+if (window.duchamp) {
+  handlers.prev = duchamp.previousStory();
+  handlers.next = duchamp.nextStory();
+}
+
+async function main() {
   const BaseUrl = window.__FREMOTE_BASE_URL__;
 
   window.addEventListener("message", (event) => {
     // if (event.origin !== BaseUrl) {
     //   return;
     // }
-    const { namespace, type, data } = event.data;
-    if (namespace !== "fremote") {
+    if (event.data?.namespace !== "fremote") {
       return;
     }
+    console.log("[fremote]", event.data);
+    const { type } = event.data;
     switch (type) {
-      // case "next":
-      //   console.log("next");
-      //   break;
+      case "prev":
+        handlers.prev();
+        break;
+      case "next":
+        handlers.next();
+        break;
+      case "fullscreen":
+        document.documentElement.requestFullscreen();
+        break;
       default:
         console.log("Unknown message type:", event);
     }
