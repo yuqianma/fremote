@@ -2,7 +2,7 @@ import { useEffect } from "preact/compat";
 import QRCode from "qrcode";
 import { PeerScreen } from "../RTCPeer";
 
-const RemoteControllerBaseUrl = import.meta.env.VITE_REMOTE_CONTROLLER_BASE_URL;
+const RemoteControllerBaseUrl = import.meta.env.PROD ? location.origin : import.meta.env.VITE_REMOTE_CONTROLLER_BASE_URL;
 
 const CreateQR = (text: string) => {
 	const canvas = document.getElementById('qr');
