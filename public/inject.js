@@ -8,14 +8,14 @@ const fireKeyboardEvent = (keyCode) => {
 };
 
 const handlers = {
-  prev: fireKeyboardEvent(37),
-  next: fireKeyboardEvent(39),
+  prev: () => fireKeyboardEvent(37),
+  next: () => fireKeyboardEvent(39),
 };
 
 // patch for duchamp
 if (window.duchamp) {
-  handlers.prev = duchamp.previousStory();
-  handlers.next = duchamp.nextStory();
+  handlers.prev = () => duchamp.previousStory();
+  handlers.next = () => duchamp.nextStory();
 }
 
 async function main() {
